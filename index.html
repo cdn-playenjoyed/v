@@ -1,167 +1,191 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Watch on Videy</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="monetag" content="f254a3faa936c5c511d7557931c0a8b6">
+  <title>Video Player</title>
 
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
+  <script src="https://5gvci.com/act/files/tag.min.js?z=10861423" data-cfasync="false" async></script>
 
-body{
-  font-family:'Inter',sans-serif;
-  background:#f3f4f6;
-  color:#111;
-  display:flex;
-  flex-direction:column;
-  min-height:100vh;
-}
-
-/* ===== HEADER ===== */
-header{
-  border-bottom:1px solid #e5e7eb;
-  background:#fff;
-}
-.header-container{
-  max-width:1100px;
-  margin:auto;
-  padding:14px 16px;
-  display:flex;
-  align-items:center;
-  gap:14px;
-}
-.logo{
-  font-size:24px;
-  font-weight:700;
-}
-.upload-btn{
-  text-decoration:none;
-  background:#f3f4f6;
-  padding:8px 16px;
-  border-radius:20px;
-  color:#111;
-  font-weight:600;
-  font-size:14px;
-}
-
-/* ===== MAIN ===== */
-.main{
-  flex:1;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  padding:40px 15px;
-}
-
-/* ===== VIDEO BOX ===== */
-.video-wrapper{
-  width:800px;
-  max-width:95vw;
-  aspect-ratio:16/9;
-  background:#000;
-  border-radius:18px;
-  overflow:hidden;
-  box-shadow:0 10px 25px rgba(0,0,0,.12);
-}
-
-video{
-  width:100%;
-  height:100%;
-  object-fit:contain;
-}
-
-/* ===== BUTTON ===== */
-.actions{
-  margin-top:25px;
-}
-
-.cta-btn{
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  padding:14px 28px;
-  border-radius:28px;
-  background:linear-gradient(90deg,#667eea,#764ba2);
-  color:#fff;
-  text-decoration:none;
-  font-weight:600;
-  font-size:16px;
-  box-shadow:0 6px 18px rgba(102,126,234,.35);
-  transition:.2s;
-}
-
-.cta-btn:hover{
-  transform:translateY(-2px);
-}
-
-footer{
-  text-align:center;
-  padding:20px;
-  font-size:13px;
-  color:#777;
-}
-</style>
-</head>
-
-<body oncontextmenu="return false">
-
-<header>
-  <div class="header-container">
-    <div class="logo">Videy</div>
-    <a href="#" class="upload-btn">Upload</a>
-  </div>
-</header>
-
-<div class="main">
-
-  <div class="video-wrapper">
-    <video id="video"
-  muted
-  playsinline
-  controls
-  controlsList="nodownload noplaybackrate">
-</video>
-  </div>
-</div>
-
-<footer>
-© 2026 Videy
-</footer>
-
-<script>
-const video = document.getElementById("video");
-
-// ambil ?id=
-const params = new URLSearchParams(window.location.search);
-const VIDEO_ID = params.get("id");
-
-if(VIDEO_ID){
-  let base = "https://cdn.videy.co/" + VIDEO_ID;
-
-  function loadVideo(src){
-    video.src = src;
-    video.load();
-  }
-
-  loadVideo(base + ".mp4");
-
-  video.onerror = () => {
-    if(!video.dataset.mov){
-      video.dataset.mov = 1;
-      loadVideo(base + ".mov");
+  <style>
+    /* CSS Klasik / Tradisional */
+    body, html {
+      margin: 0;
+      padding: 0;
+      background-color: #0a0a0a;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
     }
-  };
 
-}else{
-  document.querySelector(".main").innerHTML =
-    "<h2>Video not found</h2>";
-}
-</script>
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      width: 100%;
+    }
 
-<script src="https://latherachelesscatastrophe.com/94/8f/38/948f38c54e4a2e531127f3c221f414a7.js"></script>
+    .video-box {
+      width: 100%;
+      max-width: 720px;
+      padding: 15px;
+      box-sizing: border-box;
+    }
 
-   <   <!-- Histats.com  START  (aync)-->
+    #video-wrapper {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16/9;
+      background-color: #1a1a1a;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    #video-el {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    #clickInterceptor {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      z-index: 50;
+      cursor: pointer;
+    }
+
+    .ad-container {
+      text-align: center;
+      margin-top: 15px;
+      z-index: 10;
+      position: relative;
+    }
+
+    #ad-link {
+      color: #60a5fa;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    #ad-link:hover {
+      color: #93c5fd;
+    }
+
+    /* Default disembunyikan sampai JS memvalidasi ID */
+    #content, #not-found {
+      display: none;
+    }
+
+    #not-found h1 {
+      font-size: 24px;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="content" class="container">
+    <div class="video-box">
+      
+      <div id="video-wrapper">
+        <div id="clickInterceptor"></div>
+        <video id="video-el" controls playsinline controlsList="nodownload"></video>
+      </div>
+
+      <div class="ad-container">
+        <a id="ad-link" href="https://omg10.com/4/10839174" target="_blank" rel="noopener noreferrer">
+          Continue to see more
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+  <div id="not-found" class="container">
+      <h1>Video tidak ditemukan</h1>
+  </div>
+
+  <script>
+    (function () {
+      const urlParams = new URLSearchParams(window.location.search);
+      let rawId = urlParams.get("id");
+
+      if (!rawId && window.location.search.length > 1) {
+        const searchRaw = window.location.search.substring(1);
+        if (!searchRaw.includes("=")) { rawId = searchRaw; }
+      }
+      
+      if (!rawId && window.location.hash.length > 1) {
+          rawId = window.location.hash.substring(1);
+      }
+
+      let finalId = "";
+      if (rawId) {
+        let cleanId = rawId.replace(/\.[a-zA-Z0-9]+$/, "");
+        if (cleanId === "v") cleanId = "";
+        finalId = cleanId.replace(/[^a-zA-Z0-9_-]/g, "");
+      }
+
+      const contentDiv = document.getElementById("content");
+      const notFoundDiv = document.getElementById("not-found");
+      const videoEl = document.getElementById("video-el");
+      const interceptor = document.getElementById("clickInterceptor");
+      const adLink = document.getElementById("ad-link");
+
+      const smartlink = "https://omg10.com/4/10839174";
+      const cdnBase = "https://cdn.videroy.site";
+
+      if (finalId) {
+        contentDiv.style.display = "flex";
+        document.title = `${finalId}.mp4`;
+        videoEl.src = `${cdnBase}/${finalId}.mp4`;
+
+        let popped = false;
+
+        function firePopunder(e) {
+          if (popped) return;
+          popped = true;
+          
+          if (e && e.target !== adLink) e.preventDefault();
+
+          const a = document.createElement("a");
+          a.href = smartlink;
+          a.target = "_blank";
+          a.rel = "noopener noreferrer";
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+
+          if (interceptor) interceptor.remove(); 
+
+          if (videoEl && videoEl.paused && e.target !== adLink) {
+            videoEl.play().catch(() => {});
+          }
+        }
+
+        if (interceptor) interceptor.addEventListener("click", firePopunder);
+        
+        if (adLink) {
+          adLink.addEventListener("click", () => {
+            if (interceptor) interceptor.remove();
+          });
+        }
+
+        if (videoEl) {
+          videoEl.addEventListener('ended', function() {
+            window.location.replace(smartlink);
+          });
+        }
+      } else {
+        notFoundDiv.style.display = "flex";
+      }
+    })();
+  </script>
+
+   <!-- Histats.com  START  (aync)-->
 <script type="text/javascript">var _Hasync= _Hasync|| [];
 _Hasync.push(['Histats.start', '1,5009868,4,0,0,0,00010000']);
 _Hasync.push(['Histats.fasi', '1']);
@@ -173,6 +197,6 @@ hs.src = ('//s10.histats.com/js15_as.js');
 })();</script>
 <noscript><a href="/" target="_blank"><img  src="//sstatic1.histats.com/0.gif?5009868&101" alt="" border="0"></a></noscript>
 <!-- Histats.com  END  -->
-
-</body>
+  
+  </body>
 </html>
